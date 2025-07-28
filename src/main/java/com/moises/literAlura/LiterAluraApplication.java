@@ -3,7 +3,7 @@ package com.moises.literAlura;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
+import java.util.*;
 import com.moises.literAlura.Cliente.*;
 import com.moises.literAlura.Servicios.*;
 import com.moises.literAlura.Modelo.*;
@@ -17,11 +17,42 @@ private static String url = "https://gutendex.com/books/?ids=20008";
 
 	@Override
 	public void run(String... args) throws Exception {
-		var libros = new consumoApi();
 		var menuInicial = new menuInicial();
+		var libros = new consumoApi();
+		Scanner scan = new Scanner(System.in); 
+		int opcion = 0;
+		boolean repeticion = true; 
 
-		menuInicial.getMenuInicial();
-		System.out.println("===============================");
+		do {
+			while (repeticion) {
+				menuInicial.getMenuInicial();
+				try {
+					opcion = scan.nextInt(); 
+					repeticion = false;
+				} catch (InputMismatchException e) {
+					System.out.println("El valor ingresado no es valido" +
+					"\nIngresa un valor valido ");
+					scan.next(); 
+					}
+			} 
+			repeticion = true; 
+
+			switch (opcion) {
+				case 1:
+					menuInicial.buscarLibroTitulo();
+				break;
+			
+				default:
+					break;
+			}
+			
+			
+		
+		} while (opcion != 0);
+		
+
+		
+		
 
 		var json = libros.obtenerDatos(url); 
 
@@ -31,6 +62,7 @@ private static String url = "https://gutendex.com/books/?ids=20008";
 		System.out.println(guardadoDatos.getInfoLibros().getTitulo()); 
 		
 		// System.out.println(datos);
+		scan.close();
 	
 	}
 
