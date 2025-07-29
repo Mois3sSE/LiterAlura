@@ -10,7 +10,7 @@ import com.moises.literAlura.Modelo.*;
 
 @SpringBootApplication
 public class LiterAluraApplication implements CommandLineRunner {
-private static String url = "https://gutendex.com/books/?ids=20008"; 
+
 	public static void main(String[] args) {
 		SpringApplication.run(LiterAluraApplication.class, args);
 	}
@@ -22,6 +22,7 @@ private static String url = "https://gutendex.com/books/?ids=20008";
 		Scanner scan = new Scanner(System.in); 
 		int opcion = 0;
 		boolean repeticion = true; 
+		String url = ""; 
 
 		do {
 			while (repeticion) {
@@ -38,13 +39,22 @@ private static String url = "https://gutendex.com/books/?ids=20008";
 			repeticion = true; 
 
 			switch (opcion) {
+				case 0:
+					System.exit(0); 
+				break; 
 				case 1:
-					menuInicial.buscarLibroTitulo();
+					url = menuInicial.buscarLibroTitulo();
 				break;
 			
 				default:
 					break;
 			}
+
+			var json = libros.obtenerDatos(url); 
+			conversorDatos conversor = new conversorDatos(); 
+			var datos = conversor.obtenerDatos(json,datosResultantes.class); 
+			datosGenerales guardadoDatos = new datosGenerales(datos);  
+			System.out.println(guardadoDatos.getInfoLibros()); 
 			
 			
 		
@@ -54,12 +64,7 @@ private static String url = "https://gutendex.com/books/?ids=20008";
 		
 		
 
-		var json = libros.obtenerDatos(url); 
-
-		conversorDatos conversor = new conversorDatos(); 
-		var datos = conversor.obtenerDatos(json,datosResultantes.class); 
-		datosGenerales guardadoDatos = new datosGenerales(datos);
-		System.out.println(guardadoDatos.getInfoLibros().getTitulo()); 
+		
 		
 		// System.out.println(datos);
 		scan.close();

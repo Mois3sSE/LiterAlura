@@ -36,10 +36,10 @@ public class libroInfo {
         }
         @Override
         public String toString() {
-        return "El titulo es " + titulo + 
-        "\n, Los autores son " + autores +
+        return "============ LIBRO ==============="+ "\nTitulo: " + titulo + 
+        "\nAutores: " + autores +
         " Nacio el " + año_nacimiento + " y fallecio el " + año_fallecimiento +
-        "\n, Los idiomas disponibles son " + lenguajes +
-        "\n===========================";
+        "\nIdiomas: " + lenguajes +
+        "\n==================================";
         }
 }

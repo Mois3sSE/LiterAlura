@@ -9,7 +9,5 @@ public record datosLibros(
     @JsonAlias("authors") List<datosPersonas> autores,
     @JsonAlias("languages") List<String> lenguajes
 ) {
-    public void getTitulo(){
-        System.out.println(titulo);
-    }
+ 
 }
