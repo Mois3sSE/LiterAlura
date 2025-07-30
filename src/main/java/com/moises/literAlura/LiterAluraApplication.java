@@ -54,7 +54,7 @@ public class LiterAluraApplication implements CommandLineRunner {
 			conversorDatos conversor = new conversorDatos(); 
 			var datos = conversor.obtenerDatos(json,datosResultantes.class); 
 			datosGenerales guardadoDatos = new datosGenerales(datos);  
-			System.out.println(guardadoDatos.getInfoLibros()); 
+			System.out.println(guardadoDatos.getLibros() + ""+ guardadoDatos.getAutor());
 			
 			
 		

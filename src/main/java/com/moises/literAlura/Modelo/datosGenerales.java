@@ -3,14 +3,14 @@ package com.moises.literAlura.Modelo;
 import java.util.*;
 
 public class datosGenerales {
-    private libroInfo informacionLibros;
-    Scanner scan = new Scanner(System.in);  
+    Scanner scan = new Scanner(System.in);
+    private Libros libro ;
+    private Personas autor;   
 
     public datosGenerales(datosResultantes datos){
-        Integer añoNacimiento = null ,añoFallecimiento = null;
-        List<String> nombresAutores = new ArrayList<>();
         List<datosLibros> librosEncontrados = new ArrayList<>();
-        int libro;  
+        int libro; 
+
         for (datosLibros datosLibros : datos.resultados()) {
             librosEncontrados.add(datosLibros); 
         }
@@ -18,30 +18,25 @@ public class datosGenerales {
 
         if(!datos.resultados().isEmpty()){
             datosLibros datoLibro = datos.resultados().get(libro);    
-               
-            if(datoLibro.autores()!= null){
-                for(datosPersonas autores : datoLibro.autores()){
-                    nombresAutores.add(autores.nombre()); 
-                    añoNacimiento = autores.año_nacimiento();
-                    añoFallecimiento = autores.año_fallecimiento();  
-                }
-            }
-            libroInfo libroInformacion = new libroInfo(
-                datoLibro.titulo(), 
-                nombresAutores, 
-                datoLibro.lenguajes(),
-                añoNacimiento,
-                añoFallecimiento
-                );
-                
-                informacionLibros = libroInformacion;  
+            Libros libroSeleccionado = new Libros(datoLibro); 
+            Personas autoresLibro = new Personas(libroSeleccionado.getAutores()); 
+
+            setLibro(libroSeleccionado);
+            setAutor(autoresLibro);
         }
         
     }
-
-
-    public libroInfo getInfoLibros (){
-        return informacionLibros; 
+    private void setLibro (Libros libro){
+        this.libro = libro; 
+    }
+    private void setAutor(Personas autor){
+        this.autor = autor; 
+    }
+    public Libros getLibros(){
+        return libro; 
+    }
+    public Personas getAutor(){
+        return autor; 
     }
 
     private int seleccionarTitulo(List<datosLibros> libros){
@@ -54,6 +49,8 @@ public class datosGenerales {
         int opcion = scan.nextInt() - 1; 
         return opcion; 
     }
+  
+   
 
 
 }
