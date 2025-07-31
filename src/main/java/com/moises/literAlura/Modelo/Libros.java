@@ -1,14 +1,20 @@
 package com.moises.literAlura.Modelo;
 
 import java.util.List;
+import jakarta.persistence.*; 
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-
+@Entity
+@Table(name = "libros")
 public class Libros {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long Id;
+    @Column(unique = true)
     private String titulo; 
+    @Transient
     private List<datosPersonas> autores; 
-    private  List<String> lenguajes; 
-    private Number descargas; 
+    private List<String> lenguajes; 
+    private Integer descargas; 
 
     public Libros(datosLibros libro){
         this.titulo = libro.titulo(); 
@@ -28,9 +34,12 @@ public class Libros {
     public List<String> getLenguajes(){
             return lenguajes; 
         }
-    public Number getDescargas(){
+    public Integer getDescargas(){
             return descargas; 
         }
+    public Long getId(){
+        return Id; 
+    }
     @Override
     public String toString() {
         return "========== Libro ==========" + 
