@@ -11,21 +11,29 @@ public class Libros {
     private Long Id;
     @Column(unique = true)
     private String titulo; 
-    @Transient
-    private List<datosPersonas> autores; 
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Personas> autores;
+    @ElementCollection 
     private List<String> lenguajes; 
     private Integer descargas; 
 
     public Libros(datosLibros libro){
         this.titulo = libro.titulo(); 
-        this.autores = libro.autores(); 
+        List<Personas> autores = libro.autores().stream()
+            .map(a -> new Personas(a.nombre(), a.año_nacimiento(), a.año_fallecimiento()))
+            .toList();
+        setPersonas(autores); 
+
         this.lenguajes = libro.lenguajes(); 
         this.descargas = libro.descargas(); 
     }
      public String getTitulo(){
             return titulo; 
         }
-    public datosPersonas getAutores(){
+    private void setPersonas(List<Personas> autores){
+        this.autores = autores; 
+    }
+    public Personas getPersonas(){
         for(int i = 0; i < autores.size();){
             return autores.get(i);
         }

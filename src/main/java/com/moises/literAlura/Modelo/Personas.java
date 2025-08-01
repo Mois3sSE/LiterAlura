@@ -1,14 +1,26 @@
 package com.moises.literAlura.Modelo;
 
+import java.util.*;
+
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "autores")
 public class Personas {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long Id;
     private Integer año_nacimiento;
     private Integer año_fallecimiento; 
-    private String nombre; 
+    private String nombre;
+    @ManyToMany(mappedBy = "autores")
+    private List<Libros> libros = new ArrayList<>();  
+    public Personas(){}
 
-    public Personas(datosPersonas autor){
-        this.año_fallecimiento = autor.año_fallecimiento(); 
-        this.año_nacimiento = autor.año_nacimiento(); 
-        this.nombre = autor.nombre(); 
+    public Personas(String nombre,Integer año_nacimiento,Integer año_fallecimiento){
+        this.nombre = nombre; 
+        this.año_nacimiento = año_nacimiento; 
+        this.año_fallecimiento = año_fallecimiento; 
     }
     public Integer getAñoNacimiento(){
         return año_nacimiento; 

@@ -19,7 +19,7 @@ public class datosGenerales {
         if(!datos.resultados().isEmpty()){
             datosLibros datoLibro = datos.resultados().get(libro);    
             Libros libroSeleccionado = new Libros(datoLibro); 
-            Personas autoresLibro = new Personas(libroSeleccionado.getAutores()); 
+            Personas autoresLibro = libroSeleccionado.getPersonas(); 
 
             setLibro(libroSeleccionado);
             setAutor(autoresLibro);

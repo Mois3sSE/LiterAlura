@@ -2,10 +2,9 @@ package com.moises.literAlura.Cliente;
 
 import java.util.*;
 
-import com.moises.literAlura.Modelo.datosGenerales;
-import com.moises.literAlura.Modelo.datosResultantes;
-import com.moises.literAlura.Servicios.consumoApi;
-import com.moises.literAlura.Servicios.conversorDatos;
+import com.moises.literAlura.Modelo.*; 
+import com.moises.literAlura.Repositorio.*;
+import com.moises.literAlura.Servicios.*;
 
 
 public class menuInicial {
@@ -16,8 +15,59 @@ private String[] menu = {"Elija la opcion a traves de su numero: ",
 "5.- Listar libros por idioma","0.- Salir"}; 
 Scanner scan = new Scanner(System.in); 
 consumoApi libros = new consumoApi();
+LibrosRepository repositorio; 
 
-    public void getMenuInicial(){
+    public menuInicial(){}
+    public menuInicial(LibrosRepository repositorio){
+        this.repositorio = repositorio; 
+    }
+
+    public void run (){
+		int opcion = 0;
+		boolean repeticion = true; 
+		String url = ""; 
+
+		do {
+			while (repeticion) {
+				getMenuInicial();
+				try {
+					opcion = scan.nextInt(); 
+					repeticion = false;
+				} catch (InputMismatchException e) {
+					System.out.println("El valor ingresado no es valido" +
+					"\nIngresa un valor valido ");
+					scan.next(); 
+					}
+			} 
+			repeticion = true; 
+			switch (opcion) {
+				case 0:
+					System.exit(0); 
+				break; 
+				case 1:
+					url = buscarLibroTitulo(); 
+					var datosGenerales = setDatos(url); 
+					System.out.println(datosGenerales.getLibros() + " " 
+					+ datosGenerales.getAutor());
+					repositorio.save(datosGenerales.getLibros()); 
+				break;
+                case 2: 
+                    listarLibros();
+                break; 
+			
+				default:
+					break;
+			}
+			
+		
+		} while (opcion != 0);
+		// System.out.println(datos);
+		scan.close();
+	
+    }
+
+
+    private void getMenuInicial(){
         System.out.println("");
         for (String menuInicial : menu) {
             System.out.println(menuInicial);
@@ -25,8 +75,9 @@ consumoApi libros = new consumoApi();
         System.out.print("Ingresa una opcion: ");
     }
 
-    public String buscarLibroTitulo (){
+    private String buscarLibroTitulo (){
         System.out.print("Ingresa el titulo del libro a buscar: ");
+            scan.nextLine(); 
             String libro = scan.nextLine();
             System.out.println("Libro ingresado = " + libro); 
             String libroUrl = urlBase.concat("search=")
@@ -34,7 +85,11 @@ consumoApi libros = new consumoApi();
             System.out.println("La url sera : " + libroUrl);
         return libroUrl; 
     }
-    public datosGenerales setDatos(String url ){
+    private void listarLibros(){
+        repositorio.findAll(); 
+    }
+
+    private datosGenerales setDatos(String url ){
         var json = libros.obtenerDatos(url); 
         conversorDatos conversor = new conversorDatos(); 
         var datos = conversor.obtenerDatos(json,datosResultantes.class);
