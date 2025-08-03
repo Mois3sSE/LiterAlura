@@ -5,7 +5,7 @@ import java.util.*;
 public class datosGenerales {
     Scanner scan = new Scanner(System.in);
     private Libros libro ;
-    private Personas autor;   
+    private List<Personas> autor;   
 
     public datosGenerales(datosResultantes datos){
         List<datosLibros> librosEncontrados = new ArrayList<>();
@@ -19,7 +19,7 @@ public class datosGenerales {
         if(!datos.resultados().isEmpty()){
             datosLibros datoLibro = datos.resultados().get(libro);    
             Libros libroSeleccionado = new Libros(datoLibro); 
-            Personas autoresLibro = libroSeleccionado.getPersonas(); 
+            List<Personas> autoresLibro = libroSeleccionado.getPersonas(); 
 
             setLibro(libroSeleccionado);
             setAutor(autoresLibro);
@@ -29,13 +29,13 @@ public class datosGenerales {
     private void setLibro (Libros libro){
         this.libro = libro; 
     }
-    private void setAutor(Personas autor){
+    private void setAutor(List<Personas> autor){
         this.autor = autor; 
     }
     public Libros getLibros(){
         return libro; 
     }
-    public Personas getAutor(){
+    public List<Personas> getAutor(){
         return autor; 
     }
 

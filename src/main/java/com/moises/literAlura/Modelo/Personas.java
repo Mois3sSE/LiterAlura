@@ -11,9 +11,9 @@ public class Personas {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
     private Integer año_nacimiento;
-    private Integer año_fallecimiento; 
+    private Integer año_fallecimiento;
     private String nombre;
-    @ManyToMany(mappedBy = "autores")
+    @ManyToMany(mappedBy = "autores", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Libros> libros = new ArrayList<>();  
     public Personas(){}
 
@@ -31,11 +31,20 @@ public class Personas {
     public String getNombre(){
         return nombre; 
     }
+    public List<Libros> getLibros(){
+        return libros; 
+    }
+    public Long getId(){
+        return Id; 
+    }
+    public void setId(Long Id){
+        this.Id = Id; 
+    }
     @Override
     public String toString() {
-        return "\nAutor : "+ nombre +
-        "\nNacimiento : " + año_nacimiento + 
-        "\nFallecimiento : " + año_fallecimiento +
-        "\n=======================";
+        return "\nAutores: " + nombre + 
+        "\nNacimiento: " + año_nacimiento +
+        "\nFallecimiento: " + año_fallecimiento;
     }
+    
 }

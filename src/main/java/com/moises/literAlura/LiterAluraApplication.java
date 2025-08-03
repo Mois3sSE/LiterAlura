@@ -9,14 +9,16 @@ import com.moises.literAlura.Repositorio.*;
 @SpringBootApplication
 public class LiterAluraApplication implements CommandLineRunner {
 	@Autowired
-	private LibrosRepository repository; 
+	private LibrosRepository repository;
+	@Autowired
+	private PersonasRepository repository2;  
 	public static void main(String[] args) {
 		SpringApplication.run(LiterAluraApplication.class, args);
 	}
 
 	@Override
 	public void run(String... args) throws Exception {
-		menuInicial run = new menuInicial(repository);
+		menuInicial run = new menuInicial(repository,repository2);
 		run.run(); 
 	}
 
