@@ -41,8 +41,23 @@ public class Personas {
         this.Id = Id; 
     }
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Personas)) return false;
+        Personas p = (Personas) o;
+        return Objects.equals(nombre, p.nombre) &&
+           Objects.equals(año_nacimiento, p.año_nacimiento) &&
+           Objects.equals(año_fallecimiento, p.año_fallecimiento);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nombre, año_nacimiento, año_fallecimiento);
+    }
+    
+    @Override
     public String toString() {
-        return "\nAutores: " + nombre + 
+        return "\nAutor: " + nombre + 
         "\nNacimiento: " + año_nacimiento +
         "\nFallecimiento: " + año_fallecimiento;
     }

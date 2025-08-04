@@ -16,8 +16,8 @@ public class menuInicial {
 private static String urlBase = "https://gutendex.com/books/?";
 private String[] menu = {"Elija la opcion a traves de su numero: ", 
 "1.- Buscar libro por titulo","2.- Listar libros registrados",
-"3.- Listar autores registrados","4.- Listar autores vivos en un determinado año",
-"5.- Listar libros por idioma","0.- Salir"}; 
+"3.- Listar autores registrados","4.- Listar autores en un lapso de tiempo",
+"5.- Listar autores vivos en un determinado año","6.- Listar libros por idioma","0.- Salir"}; 
 Scanner scan = new Scanner(System.in); 
 consumoApi libros = new consumoApi();
 LibrosRepository repositorioLibros; 
@@ -54,6 +54,8 @@ List<Personas> autoresLista;
 				case 1 -> buscarLibroTitulo(); 
                 case 2 -> listarLibros();
                 case 3 -> listarAutores();
+                case 4 -> listarAutoresEnLapso();
+                case 5 -> listarAutoresEnAño();
                 
 				default-> System.out.println("OK");
 			}
@@ -110,18 +112,24 @@ List<Personas> autoresLista;
     @Transactional
     private void listarAutores(){
         autoresLista = repositorioPersonas.findAll(); 
-        autoresLista.stream()
-        .sorted(Comparator.comparing(Personas::getNombre))
-        .forEach(autor -> {
-            System.out.println(autor);
-            System.out.print("Libros: ");
-            List<Libros> librosAutor = repositorioPersonas.librosPorAutor(autor.getNombre());
-            librosAutor.forEach(libro -> {
-                System.out.print(libro.getTitulo() + " ");
-            }); 
-            System.out.println("\n");
-        });
-        
+        impresionListaAutores(autoresLista); 
+    }
+    @Transactional 
+    private void listarAutoresEnLapso(){
+        System.out.print("Ingresa el periodo donde quieres saber los autores vivos" +
+        "\n1er Año: ");
+        Integer año1 = scan.nextInt();
+        System.out.print("2do Año: ");
+        Integer año2 = scan.nextInt(); 
+        List<Personas> autoresAño = repositorioPersonas.autoresPorPeriodo(año1, año2);
+        impresionListaAutores(autoresAño);
+    }
+    @Transactional 
+    private void listarAutoresEnAño(){
+        System.out.println("Ingresa el año vivo de los autores que desea buscar");
+        Integer año = scan.nextInt(); 
+        List<Personas> autoresPorAño = repositorioPersonas.autoresPorAño(año); 
+        impresionListaAutores(autoresPorAño);
     }
     private datosGenerales setDatos(String url ){
         var json = libros.obtenerDatos(url); 
@@ -129,5 +137,19 @@ List<Personas> autoresLista;
         var datos = conversor.obtenerDatos(json,datosResultantes.class);
         datosGenerales guardadoDatos = new datosGenerales(datos);
         return guardadoDatos;    
+    }
+    private void impresionListaAutores(List<Personas> autoresLista){
+        autoresLista.stream()
+        .distinct()
+        .sorted(Comparator.comparing(Personas::getNombre))
+        .forEach(autor -> {
+            System.out.println("-----------------"+autor);
+            System.out.print("Libros: ");
+            List<Libros> librosAutor = repositorioPersonas.librosPorAutor(autor.getNombre());
+            librosAutor.forEach(libro -> {
+                System.out.print(libro.getTitulo() + " ");
+            }); 
+            System.out.println("\n-----------------"); 
+        }); 
     }
 }
