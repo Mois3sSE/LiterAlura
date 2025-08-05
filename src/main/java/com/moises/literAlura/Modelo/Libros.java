@@ -13,6 +13,7 @@ public class Libros {
     private String titulo; 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Personas> autores;
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> lenguajes; 
     private Integer descargas;
 

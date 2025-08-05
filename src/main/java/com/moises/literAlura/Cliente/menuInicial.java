@@ -56,7 +56,7 @@ List<Personas> autoresLista;
                 case 3 -> listarAutores();
                 case 4 -> listarAutoresEnLapso();
                 case 5 -> listarAutoresEnAño();
-                
+                case 6 -> listarLibrosPorIdioma();
 				default-> System.out.println("OK");
 			}
 			
@@ -131,6 +131,26 @@ List<Personas> autoresLista;
         List<Personas> autoresPorAño = repositorioPersonas.autoresPorAño(año); 
         impresionListaAutores(autoresPorAño);
     }
+    @Transactional
+    private void listarLibrosPorIdioma(){
+        List<String> codigos = repositorioLibros.encontrarLenguajes();
+        List<String> codigosSeparados = codigos.stream().
+            flatMap(codigo -> Arrays.stream(codigo.split(",")))
+            .map(String::trim)
+            .toList(); 
+        System.out.println("Selecciona el idioma que deseas buscar: ");
+       codigosSeparados.stream()
+       .distinct()
+       .forEach(codigo -> {
+            String idioma = mapeoLenguajes(List.of(codigo)).get(0); 
+            System.out.println(codigo + " --- " + idioma);
+       });
+       scan.next(); 
+       String idioma = scan.nextLine();
+       List<Libros> librosPorIdioma = repositorioLibros.buscarPorIdioma(idioma); 
+       System.out.println(librosPorIdioma.size());
+
+    }
     private datosGenerales setDatos(String url ){
         var json = libros.obtenerDatos(url); 
         conversorDatos conversor = new conversorDatos(); 
@@ -152,4 +172,19 @@ List<Personas> autoresLista;
             System.out.println("\n-----------------"); 
         }); 
     }
+    private List<String>  mapeoLenguajes(List<String> codigos){
+        Map<String,String> mapaIdiomas = Map.of(
+            "en","Inglés",
+            "es", "Español",
+            "pt", "Portugués",
+            "pg", "Portugués",
+            "fr", "Francés",
+            "de", "Alemán"
+        ); 
+        return codigos.stream()
+        .distinct()
+        .map(codigo -> mapaIdiomas.getOrDefault(codigo, "Desconocido"))
+        .toList(); 
+    }
+    
 }
