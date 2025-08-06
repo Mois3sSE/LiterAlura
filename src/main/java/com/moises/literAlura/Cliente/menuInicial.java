@@ -1,14 +1,9 @@
 package com.moises.literAlura.Cliente;
 
-import java.beans.Transient;
 import java.util.*;
-
-import org.hibernate.annotations.SourceType;
-
 import com.moises.literAlura.Modelo.*; 
 import com.moises.literAlura.Repositorio.*;
 import com.moises.literAlura.Servicios.*;
-
 import jakarta.transaction.Transactional;
 
 
@@ -57,7 +52,7 @@ List<Personas> autoresLista;
                 case 4 -> listarAutoresEnLapso();
                 case 5 -> listarAutoresEnAño();
                 case 6 -> listarLibrosPorIdioma();
-				default-> System.out.println("OK");
+                default -> System.out.println("Ingresa una opcion del menu");
 			}
 			
 		
@@ -77,37 +72,27 @@ List<Personas> autoresLista;
     }
 
     private void buscarLibroTitulo (){
-        System.out.print("Ingresa el titulo del libro a buscar: ");
+        System.out.print("Ingresa palabras claves a buscar: ");
         scan.nextLine(); 
         String libro = scan.nextLine();
-        System.out.println("Libro ingresado = " + libro); 
         String libroUrl = urlBase.concat("search=")
                 .concat(libro.replace(" ", "%20")); 
-        System.out.println("La url sera : " + libroUrl);
         var datosGenerales = setDatos(libroUrl); 
-		System.out.println(datosGenerales.getLibros() + " " 
-		    + datosGenerales.getAutor() + "\nEl peso es de :" + datosGenerales.getAutor().size());
+        try{
 		repositorioLibros.save(datosGenerales.getLibros());
         repositorioPersonas.saveAll(datosGenerales.getAutor()); 
+        } catch(org.springframework.dao.DataIntegrityViolationException e){
+            System.out.println("El libro ingresado ya esta en la base de datos"
+            + "\nIngresa otro libro");
+            scan.nextLine(); 
+            run();
+        }
     }
 
     @Transactional
     private void listarLibros(){
         librosLista = repositorioLibros.findAll();
-            librosLista.stream()
-            .sorted(Comparator.comparing(Libros::getTitulo))
-            .forEach(libro -> {
-            System.out.println(libro);
-            List<Personas> autores = new ArrayList<>();
-            autores = libro.getPersonas(); 
-            String mensaje = (autores.size() != 1 ) ? "Autores: " : "Autor: "; 
-            System.out.print(mensaje);
-            autores.forEach(e -> {
-                System.out.print(e.getNombre() + " ");
-            });
-            System.out.println("\n");
-            
-            });
+        impresionListaLibros(librosLista);
     }
     @Transactional
     private void listarAutores(){
@@ -116,20 +101,45 @@ List<Personas> autoresLista;
     }
     @Transactional 
     private void listarAutoresEnLapso(){
+        Integer año1,año2; 
         System.out.print("Ingresa el periodo donde quieres saber los autores vivos" +
-        "\n1er Año: ");
-        Integer año1 = scan.nextInt();
-        System.out.print("2do Año: ");
-        Integer año2 = scan.nextInt(); 
-        List<Personas> autoresAño = repositorioPersonas.autoresPorPeriodo(año1, año2);
-        impresionListaAutores(autoresAño);
+        "\n(El intervalo abarca el nacimiento despues del primer año"+
+        " al fallecimiento del segundo año)\n1er Año: ");
+        try{
+            año1 = scan.nextInt();
+            System.out.print("2do Año: ");
+            año2 = scan.nextInt();
+            List<Personas> autoresAño = repositorioPersonas.autoresPorPeriodo(año1, año2);
+            if(autoresAño.size() == 0){
+                System.out.println("No hay autores registrados en ese lapso de tiempo");
+            } else { impresionListaAutores(autoresAño); }
+        } catch(java.util.InputMismatchException e){
+            System.out.println("No has ingresado datos numericos\n"
+            +"Vuelve a intentarlo");
+            scan.nextLine(); 
+            run();
+            
+        }
+        
+        
     }
     @Transactional 
     private void listarAutoresEnAño(){
         System.out.println("Ingresa el año vivo de los autores que desea buscar");
-        Integer año = scan.nextInt(); 
-        List<Personas> autoresPorAño = repositorioPersonas.autoresPorAño(año); 
-        impresionListaAutores(autoresPorAño);
+        try{
+            Integer año = scan.nextInt(); 
+            List<Personas> autoresPorAño = repositorioPersonas.autoresPorAño(año);
+            if(autoresPorAño.size() == 0){
+                System.out.println("No hay autores registrados para ese año");
+            } else {impresionListaAutores(autoresPorAño);}
+            
+        }catch(java.util.InputMismatchException e){
+            System.out.println("No has ingresado datos numericos\n"
+            +"Vuelve a intentarlo");
+            scan.nextLine(); 
+            run();
+        }
+        
     }
     @Transactional
     private void listarLibrosPorIdioma(){
@@ -145,10 +155,13 @@ List<Personas> autoresLista;
             String idioma = mapeoLenguajes(List.of(codigo)).get(0); 
             System.out.println(codigo + " --- " + idioma);
        });
-       scan.next(); 
-       String idioma = scan.nextLine();
-       List<Libros> librosPorIdioma = repositorioLibros.buscarPorIdioma(idioma); 
-       System.out.println(librosPorIdioma.size());
+       scan.nextLine(); 
+        String idiomaSel = scan.nextLine(); 
+       List<Libros> librosPorIdioma = repositorioLibros.buscarPorIdioma(idiomaSel);
+       if(librosPorIdioma.size() == 0){
+        System.out.println("Parece que el idioma no esta registrado\nIntentalo de nuevo");
+       } else{ impresionListaLibros(librosPorIdioma);}
+    
 
     }
     private datosGenerales setDatos(String url ){
@@ -157,6 +170,22 @@ List<Personas> autoresLista;
         var datos = conversor.obtenerDatos(json,datosResultantes.class);
         datosGenerales guardadoDatos = new datosGenerales(datos);
         return guardadoDatos;    
+    }
+    private void impresionListaLibros(List<Libros> librosLista){
+        librosLista.stream()
+            .sorted(Comparator.comparing(Libros::getTitulo))
+            .forEach(libro -> {
+            System.out.println(libro);
+            List<Personas> autores = new ArrayList<>();
+            autores = libro.getPersonas(); 
+            String mensaje = (autores.size() != 1 ) ? "Autores: " : "Autor: "; 
+            System.out.print(mensaje);
+            autores.forEach(e -> {
+                System.out.print(e.getNombre() + " ");
+            });
+            System.out.println("\n");
+            
+            });
     }
     private void impresionListaAutores(List<Personas> autoresLista){
         autoresLista.stream()

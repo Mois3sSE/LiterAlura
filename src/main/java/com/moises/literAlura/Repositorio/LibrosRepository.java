@@ -10,7 +10,7 @@ import com.moises.literAlura.Modelo.Libros;
 public interface LibrosRepository extends JpaRepository<Libros,Long>{
         @Query("select l.lenguajes from Libros l")
     List<String> encontrarLenguajes();
-        @Query("SELECT l FROM Libros l JOIN l.lenguajes lang WHERE :idioma MEMBER OF l.lenguajes")
+        @Query("select l from Libros l join l.lenguajes lang where :idioma member of l.lenguajes")
     List<Libros> buscarPorIdioma(String idioma);
 
 
